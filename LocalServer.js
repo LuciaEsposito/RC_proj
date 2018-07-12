@@ -32,8 +32,10 @@ app.post('/shared', function(req, res){
         var corso = req.body.corso.toLowerCase();
         var professore = req.body.professore.toLowerCase();
         var name = req.body.Name1;
+	var univ = req.body.univ;
+	var anno = req.body.anno;
        
-	salvaDati("/Users/biosan/Desktop/Upsharer/"+name, professore, corso);
+	salvaDati("/Users/biosan/Desktop/Upsharer/"+name, professore, corso, univ, anno);
 	
 	// mostra un'altra schermata per ringraziare l'utente della condivisione (mostrando i dati che ha inserito) e per poter tornare 
 	// sulla pagina principale e fare nuove operazioni 
@@ -60,8 +62,9 @@ app.post('/use_token', function(req, res){
 	// vogliono caricare; la form viene elaborata da "http://localhost:3000/shared" 
         var body = '<body style="background:#cce7ff;"><p><strong> Inserisci i seguenti dati </p></strong>' +
 	    	   '<form id="IdTags" action="/shared" method ="post"><input type="hidden" name="Name1" value='+fileName+'>' +
-	    	   '<p>Corso:</p><input type="text" name="corso" required><br><p>Professore:</p><input type="text" name="professore" required>' +
-	    	   '<br></br><input type="submit" value="Invia"></form></body>';
+	    	   '<p>Corso:<br><input type="text" name="corso" required><br><p>Professore:<br><input type="text" name="professore" required><br>' +
+	    	   '<p>Universit&agrave;:<br><input type="text" name="univ" required><br><p>Anno:<br><input type="text" name="anno" required><br><br>' +
+		   '</br><input type="submit" value="Invia"></form></body>';
         res.write(body);
         res.end();
 	
@@ -99,7 +102,7 @@ app.post('/use_token', function(req, res){
 });
 
 // funzione che manda i dati al database
-function salvaDati(nomeFile, professore, corso){         
+function salvaDati(nomeFile, professore, corso, univ, anno){         
 	var options = { method: 'POST',
   			url: 'https://appunti-db.herokuapp.com/db/api/v0.1/notes',
   			headers: 
@@ -112,8 +115,8 @@ function salvaDati(nomeFile, professore, corso){
      		  	  owner: '',
      		  	  teacher: professore,
      		  	  subject: corso,
-     		  	  university: 'sapienza',
-     		  	  year: '2017',
+     		  	  university: univ,
+     		  	  year: anno,
      		  	  tags: [ 'testtesttest' ] },
   			json: true };
 
@@ -122,7 +125,7 @@ function salvaDati(nomeFile, professore, corso){
 			console.log(error);
 			return;
 		}
-		console.log("Risposta database: codice identificativo dell'appunto condiviso -> "+body.nid);
+		console.log("Risposta database:\n codice identificativo dell'appunto condiviso -> "+body.nid);
 	});
 }    
 
