@@ -1,7 +1,7 @@
 // installo le librerie
 var express = require('express');
 var request = require('request');
-var bodyParser = require("body-parser");  // parse incoming request bodies in a middleware before your handlers
+var bodyParser = require("body-parser");
 var fs = require('fs');
 const { google } = require('googleapis');
 
@@ -15,17 +15,19 @@ const { OAuth2Client } = require('google-auth-library');
 var port = 3000;
 var app = express();
 
-app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded; parse extended syntax with the qs module A new body object containing the parsed data is populated on the request object after the middleware (i.e. req.body). This object will contain key-value pairs, where the value can be a string or array (when extended is false), or any type (when extended is true). The extended option allows to choose between parsing the URL-encoded data with the querystring library (when false) or the qs library (when true). The "extended" syntax allows for rich objects and arrays to be encoded into the URL-encoded format, allowing for a JSON-like experience with URL-encoded. For more information, please see the qs library. Basically extended allows you to parse full objects.
+app.use(bodyParser.urlencoded({ extended: false })); 
 
-// con la richiesta http://localhost:3000/ apre la pagina web principale
+// con la richiesta "http://localhost:3000/" apre la pagina web principale
 app.get('/', function(req, res){
-	fs.readFile('indexLogin.html',function (err, data){
+	fs.readFile('index.html',function (err, data){
 		res.writeHead(200, {'Content-Type': 'text/html','Content-Length':data.length});
 		res.write(data);
 		res.end(); 
 	});
 });
 
+// gestisce la richiesta "http://localhost:3000/shared" per mandare al database "/Users/biosan/Desktop/Upsharer/" i dati e il file che si
+// vuole condividere
 app.post('/shared', function(req, res){
         var corso = req.body.corso.toLowerCase();
         var professore = req.body.professore.toLowerCase();
@@ -33,17 +35,21 @@ app.post('/shared', function(req, res){
         var dict = {"Corso" : corso,
                    "Professore" : professore};
         var jsonData = JSON.stringify(dict);
-	fs.writeFile("/home/biar/RC/Upsharer"+name+".json", jsonData, function(err) {
+	fs.writeFile("/Users/biosan/Desktop/Upsharer/"+name+".json", jsonData, function(err) {	// scrive i dati su un file del database
 	    if(err) {
 		return console.log(err);
 	    }
 	});
+	
+	salvaDati("/Users/biosan/Desktop/Upsharer/"+name);
+	
+	// mostra un'altra schermata per ringraziare l'utente della condivisione (mostrando i dati che ha inserito) e per poter tornare 
+	// sulla pagina principale e fare nuove operazioni 
 	res.write('<body style="background:#cce7ff;">');
         res.write('<p> Corso: <strong>'+corso+'</strong></p><p> Professore: <strong>'+professore+'</strong></p>');
         res.write('<p> Grazie per aver condiviso <strong>'+name+'</strong> !<p/>');
-        res.write('<button onclick="goBack()">Torna alla pagina principale</button><script>function goBack() {window.history.go(-4);}</script></body>');
+        res.write('<button onclick="goBack()">Torna alla pagina principale</button><script>function goBack() {window.history.go(-2);}</script></body>');
         res.end();
-	salvaDati("/home/biar/RC/Upsharer/"+name);
 });
 
 // quando si invia la form viene fatta una POST di "use_token", al quale vengono passati i vari dati "hidden" 
@@ -86,18 +92,6 @@ app.post('/use_token', function(req, res){
                 console.log(err);
             })
             .pipe(fstream);
-	});
-});
-
-app.post('/registration', function(req, res){
-		var username = req.body.username;
-		var password = req.body.password;
-		console.log("username --> "+username);
-		console.log("password --> "+password);
-	fs.readFile('condividi.html',function (err, data){
-		res.writeHead(200, {'Content-Type': 'text/html','Content-Length':data.length});
-		res.write(data);
-		res.end(); 
 	});
 });
 
@@ -144,6 +138,7 @@ function buildClient() {
   return auth;
 }
 
+// attivo il server express che si mette in ascolto sulla porta 3000
 app.listen(port, function(){
-  console.log("Express server listening on port " + port + '\n');
+  console.log("Server Express in ascolto sulla porta: " + port + '\n');
 });
