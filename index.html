@@ -1,15 +1,79 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title> Notes Uploader </title>
     
 	<script type="text/javascript">
+		
+	var developerKey = "AIzaSyCzWBqaXUvOEldgEp-B0B4Qs2gAm9Gwqio";
+	var clientId = "449156516773-31f4jscfjalpv5m64soa4rm7u46tjqe8.apps.googleusercontent.com";
 	
-    function insertValues(){
-	document.open();
-	document.write('<body style="background:#cce7ff;"><form id="dati" action="/registration" method ="post">Username:<input type=text name=username id=username maxlength=30 required><br> Password:<input type=password name=password id=password maxlength=30 required><br><input type=submit value="invia"></form></body>');
+	var appId = "449156516773";
+	var scope = ['https://www.googleapis.com/auth/drive'];
+
+	var pickerApiLoaded = false;
+    	var oauthToken;
+	
+   // usa lo script Google API Loader pr caricare lo script google.picker
+    function loadPicker() {
+      gapi.load('auth', onAuthApiLoad);
+      gapi.load('picker', onPickerApiLoad);
     }
+
+    function onAuthApiLoad() {
+      window.gapi.auth.authorize(
+          {
+            'client_id': clientId,
+            'scope': scope,
+            'immediate': false
+          },
+          handleAuthResult);
+    }
+
+    function onPickerApiLoad() {
+      pickerApiLoaded = true;
+      createPicker();
+    }
+
+    function handleAuthResult(authResult) {
+      if (authResult && !authResult.error) {
+        oauthToken = authResult.access_token;
+        createPicker();
+      }
+    }
+
+    // Create and render a Picker object for searching images.
+    function createPicker() {
+      if (pickerApiLoaded && oauthToken) {
+        var view = new google.picker.View(google.picker.ViewId.DOCUMENTS);
+        view.setMimeTypes("application/");
+        var picker = new google.picker.PickerBuilder()
+            .enableFeature(google.picker.Feature.NAV_HIDDEN)
+            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+            .setAppId(appId)
+            .setOAuthToken(oauthToken)
+            .addView(view)
+            .addView(new google.picker.DocsUploadView())	// -> costruttore
+            .setDeveloperKey(developerKey)
+            .setCallback(pickerCallback)
+            .build();
+         picker.setVisible(true);
+      }
+    }
+     	 
+    // A simple callback implementation.
+    function pickerCallback(data) {
+      if (data.action == google.picker.Action.PICKED) {
+        var fileId = data.docs[0].id;
+        var Name = data.docs[0].name;
+        document.getElementById("a_t").value = oauthToken;
+        document.getElementById("f_id").value = fileId;
+        document.getElementById("name").value = Name;
+        document.getElementById("INT").submit();
+      }
+    }
+
 
     </script>
 
