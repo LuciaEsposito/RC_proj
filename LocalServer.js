@@ -118,8 +118,11 @@ function salvaDati(nomeFile, professore, corso){
   			json: true };
 
 	request(options, function (error, response, body) {
-  		if (error) throw new Error(error);
-			console.log(body);
+  		if (error){
+			console.log(error);
+			return;
+		}
+		console.log("Risposta database: codice identificativo dell'appunto condiviso -> "+body.nid);
 	});
 }    
 
