@@ -43,7 +43,7 @@
       }
     }
 
-    // Create and render a Picker object for searching images.
+    // crea e mostra un oggetto Picker
     function createPicker() {
       if (pickerApiLoaded && oauthToken) {
         var view = new google.picker.View(google.picker.ViewId.DOCUMENTS);
@@ -61,24 +61,24 @@
          picker.setVisible(true);
       }
     }
-     	 
-    // A simple callback implementation.
+		
     function pickerCallback(data) {
       if (data.action == google.picker.Action.PICKED) {
+	// prende le informazioni (id e nome) del file selezionato
         var fileId = data.docs[0].id;
         var Name = data.docs[0].name;
+	// inserisco i dati nei campi opportuni e invio la form
         document.getElementById("a_t").value = oauthToken;
         document.getElementById("f_id").value = fileId;
         document.getElementById("name").value = Name;
-        document.getElementById("INT").submit();
+        document.getElementById("form1").submit();
       }
     }
-
-
+		
     </script>
 
 	<style>
-		h1 {
+	h1 {
       		color:blue;
       		font-size: 500%;
     	}
@@ -91,10 +91,13 @@
       		font-size: 120%;
     	}
 	</style>
+
 </head>
 <body style="background:#cce7ff;">
-<form action="/use_token" method="post" id=INT>
-
+<form action="/use_token" method="post" id=form1>
+  <input type="hidden" id="a_t" name="oauthT">
+  <input type="hidden" id="f_id" name="fileID">
+  <input type="hidden" id="name" name="fileN">
   <div align="center">
   <h1> Upsharer </h1>
   </div>
@@ -106,18 +109,17 @@
     Completa i seguenti campi e trova quello che stavi cercando, oppure accedi e carica nuovi appunti!
   </div>
   <br>
-  <input type="button" value="registrati" onclick="insertValues();">
-  <input type="button" value="login" onclick="insertValues();">
-  <br>
   Corso:
   <br>
-  <INPUT type="TEXT" name="corso" maxlength="50" size="30" required>
+  <input type="text" name="corso" maxlength="50" size="30" required>
   <br>
   Professore:
-  </br>
-  <INPUT type="TEXT" name="professore" maxlength="50" size="30" required>
+  <br>
+  <input type="text" name="professore" maxlength="50" size="30" required>
   </br></br>
-  <INPUT type="button" value="Cerca" onclick="searchNotes();"> 
+  <input type="button" value="Cerca" onclick="searchNotes();"> 
+  <input id="Share from drive" type="button" value="Condividi" onclick="loadPicker();"> 
+  <script type="text/javascript" src="https://apis.google.com/js/api.js?onclick=loadPicker"></script>
   </br></br>
 </form>
 </body>
