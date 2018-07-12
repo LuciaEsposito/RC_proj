@@ -32,16 +32,7 @@ app.post('/shared', function(req, res){
         var corso = req.body.corso.toLowerCase();
         var professore = req.body.professore.toLowerCase();
         var name = req.body.Name1;
-        var dict = {"Corso" : corso,
-                   "Professore" : professore};
-        var jsonData = JSON.stringify(dict);
-	fs.writeFile("/Users/biosan/Desktop/Upsharer/"+name+".json", jsonData, function(err) {	// scrive i dati su un file del database
-	    if(err) {
-		console.log(err);
-		return;
-	    }
-	});
-	
+       
 	salvaDati("/Users/biosan/Desktop/Upsharer/"+name, professore, corso);
 	
 	// mostra un'altra schermata per ringraziare l'utente della condivisione (mostrando i dati che ha inserito) e per poter tornare 
