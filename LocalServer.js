@@ -56,7 +56,7 @@ app.post('/use_token', function(req, res){
 	console.log("\nfile name --> "+name+"\n");
 	console.log("\nfile id -->"+fileid+"\n");
 	
-	// mostra un'altra schermata in cui l'utente deve inserire il corso e il professore a cui si riferiscono gli appunti che si
+	// mostra un'altra schermata in cui l'utente deve inserire i vari dati a cui si riferiscono gli appunti che si
 	// vogliono caricare; la form viene elaborata da "http://localhost:3000/shared" 
         var body = '<body style="background:#cce7ff;"><p><strong> Inserisci i seguenti dati </p></strong>' +
 	    	   '<form id="IdTags" action="/shared" method ="post"><input type="hidden" name="Name1" value='+fileName+'>' +
