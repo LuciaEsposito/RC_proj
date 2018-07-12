@@ -37,99 +37,106 @@ app.post('/shared', function(req, res){
         var jsonData = JSON.stringify(dict);
 	fs.writeFile("/Users/biosan/Desktop/Upsharer/"+name+".json", jsonData, function(err) {	// scrive i dati su un file del database
 	    if(err) {
-		return console.log(err);
+		console.log(err);
+		return;
 	    }
 	});
 	
-	salvaDati("/Users/biosan/Desktop/Upsharer/"+name);
+	salvaDati("/Users/biosan/Desktop/Upsharer/"+name, professore, corso);
 	
 	// mostra un'altra schermata per ringraziare l'utente della condivisione (mostrando i dati che ha inserito) e per poter tornare 
 	// sulla pagina principale e fare nuove operazioni 
 	res.write('<body style="background:#cce7ff;">');
         res.write('<p> Corso: <strong>'+corso+'</strong></p><p> Professore: <strong>'+professore+'</strong></p>');
         res.write('<p> Grazie per aver condiviso <strong>'+name+'</strong> !<p/>');
-        res.write('<button onclick="goBack()">Torna alla pagina principale</button><script>function goBack() {window.history.go(-2);}</script></body>');
+        res.write('<button onclick="goBack()">Torna alla pagina principale</button><script>function goBack()' +
+		  '{window.history.go(-2);}</script></body>');
         res.end();
 });
 
-// quando si invia la form viene fatta una POST di "use_token", al quale vengono passati i vari dati "hidden" 
+// quando si invia la form viene fatta una POST di "/use_token", cioè si ha la richiesta "http://localhost:3000/use_token" 
 app.post('/use_token', function(req, res){
-	var fileid = req.body.fileID;
-	var name = req.body.fileN.replace(/\s/g, '');
-    
-	a_t1 = req.body.oauthT;
-    var fileName = name.replace(/\s/g, "");
-	console.log("\nposted token --> "+a_t1+"\n");
-	console.log("\nposted name --> "+name+"\n");
-	console.log("\nposted id -->"+fileid+"\n");
-        var body = '<body style="background:#cce7ff;"><p><strong> Inserisci i seguenti dati </p></strong><form id="IdTags" action="/shared" method ="post"><input type="hidden" name="Name1" value='+fileName+'><p>Corso:</p><input type="text" name="corso" required><br><p>Professore:</p><input type="text" name="professore" required><br></br><input type="submit" value="Invia"></form></body>';
+	var fileid = req.body.fileID;			// dato hidden
+	var name = req.body.fileN.replace(/\s/g, '');	// dato hidden
+	a_t1 = req.body.oauthT;				// dato hidden
+	
+    	var fileName = name.replace(/\s/g, "");
+	console.log("\naccess token --> "+a_t1+"\n");
+	console.log("\nfile name --> "+name+"\n");
+	console.log("\nfile id -->"+fileid+"\n");
+	
+	// mostra un'altra schermata in cui l'utente deve inserire il corso e il professore a cui si riferiscono gli appunti che si
+	// vogliono caricare; la form viene elaborata da "http://localhost:3000/shared" 
+        var body = '<body style="background:#cce7ff;"><p><strong> Inserisci i seguenti dati </p></strong>' +
+	    	   '<form id="IdTags" action="/shared" method ="post"><input type="hidden" name="Name1" value='+fileName+'>' +
+	    	   '<p>Corso:</p><input type="text" name="corso" required><br><p>Professore:</p><input type="text" name="professore" required>' +
+	    	   '<br></br><input type="submit" value="Invia"></form></body>';
         res.write(body);
         res.end();
-		console.log("Uploading: " + fileName + '\n'); 
-		var fstream = fs.createWriteStream(fileName);
-        //file.pipe(fstream);
+	
+	console.log("Uploading: " + fileName + '\n'); 
+	var fstream = fs.createWriteStream(fileName);
+        
         fstream.on('close', function () {
             console.log('Done\n');
         });
         fstream.on('error',function(err){
             console.log('Error during upload: ', err);
         });
-    var client = buildClient();
 	
+    	var client = buildClient();
+	
+	// API di Google Drive -> gets a file's metadata by ID
 	drive.files.get({
-      auth: client,
-      fileId: fileid,
-      alt:"media"
-    }, {
+      		auth: client,
+      		fileId: fileid,
+      		alt:"media"
+    	}, {
             responseType: 'stream'
-        },function(err, response){
-            if(err){ console.log(err); return; }
-            
-            response.data.on('error', err => {
-                console.log(err);
-				return;
-            }).on('end', ()=>{
-                console.log(err);
-            })
-            .pipe(fstream);
+        }, function(err, response){
+           	if(err){ 
+			console.log(err); 
+			return; 
+		}
+	        response.data.on('error', function(err){
+	                console.log(err);
+			return;
+        	}) .on('end', function(){
+                	console.log(err);
+            	}) .pipe(fstream);
 	});
 });
 
-function salvaDati(uri){         
+// funzione che manda i dati al database
+function salvaDati(nomeFile, professore, corso){         
 	var options = { method: 'POST',
-  					url: 'https://appunti-db.herokuapp.com/db/api/v0.1/files/h9NjLjq--vs',
-  					headers: 
-   							{ 'postman-token': 'b08dc0bf-b118-d5bd-31cc-f8e0198bf321',
-     						'cache-control': 'no-cache',
-     						'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
-  					formData: 
-   							{ enctype: 'multipart/form-data',
-     						my_file: 
-      							{ value: fs.createReadStream(uri), 
-        						options: 
-         							{ filename: 'file',
-           							contentType: null } 
-      							},
-						     my_file2: 
-      							{ value: fs.createReadStream('/home/biar/Pictures/p.png'), 
-        						options: 
-         							{ filename: 'screenshot',
-           							contentType: null } 
-      						}
-				   }
-	}
+  			url: 'https://appunti-db.herokuapp.com/db/api/v0.1/notes',
+  			headers: 
+   			{ 'postman-token': '2c3b27cd-a6fd-1e42-1d85-4b3987e30b4d',
+     		  	  'cache-control': 'no-cache',
+     		   	   authorization: 'Basic YWxlc3NhbmRybzpwYXNzd29yZDEyMzQ=',
+     		  	  'content-type': 'application/json' },
+  			body: 
+   			{ name: name,
+     		  	  owner: '',
+     		  	  teacher: professore,
+     		  	  subject: corso,
+     		  	  university: 'sapienza',
+     		  	  year: '2017',
+     		  	  tags: [ 'testtesttest' ] },
+  			json: true };
+
 	request(options, function (error, response, body) {
   		if (error) throw new Error(error);
-		console.log(body);
+			console.log(body);
 	});
-}  
+}    
 
-
-
+// funzione che crea il client con le sue credenziali oauth
 function buildClient() {
   const auth = new OAuth2Client(
-    "449156516773-31f4jscfjalpv5m64soa4rm7u46tjqe8.apps.googleusercontent.com",
-    "cGWogSskFFTYYn9EwD8_KuPq"
+    "449156516773-31f4jscfjalpv5m64soa4rm7u46tjqe8.apps.googleusercontent.com",		// client id
+    "cGWogSskFFTYYn9EwD8_KuPq"								// client secret
   );
   auth.credentials={
     access_token: a_t1,
