@@ -35,12 +35,13 @@ app.post('/shared', function(req, res){
 	var univ = req.body.univ;
 	var anno = req.body.anno;
        
-	salvaDati("/Users/biosan/Desktop/Upsharer/"+name, professore, corso, univ, anno);
+	salvaDati(name, professore, corso, univ, anno);
 	
 	// mostra un'altra schermata per ringraziare l'utente della condivisione (mostrando i dati che ha inserito) e per poter tornare 
 	// sulla pagina principale e fare nuove operazioni 
 	res.write('<body style="background:#cce7ff;">');
-        res.write('<p> Corso: <strong>'+corso+'</strong></p><p> Professore: <strong>'+professore+'</strong></p>');
+        res.write('Dati inseriti:<p> Corso: <strong>'+corso+'</strong></p><p> Professore: <strong>'+professore+'</strong></p>');
+	res.write('<p> Universit&agrave;: <strong>'+univ+'</strong></p><p> Anno: <strong>'+anno+'</strong></p>');
         res.write('<p> Grazie per aver condiviso <strong>'+name+'</strong> !<p/>');
         res.write('<button onclick="goBack()">Torna alla pagina principale</button><script>function goBack()' +
 		  '{window.history.go(-2);}</script></body>');
@@ -64,7 +65,7 @@ app.post('/use_token', function(req, res){
 	    	   '<form id="IdTags" action="/shared" method ="post"><input type="hidden" name="Name1" value='+fileName+'>' +
 	    	   '<p>Corso:<br><input type="text" name="corso" required><br><p>Professore:<br><input type="text" name="professore" required><br>' +
 	    	   '<p>Universit&agrave;:<br><input type="text" name="univ" required><br><p>Anno:<br><input type="text" name="anno" required><br><br>' +
-		   '</br><input type="submit" value="Invia"></form></body>';
+		   '<br><input type="submit" value="Invia"></form></body>';
         res.write(body);
         res.end();
 	
@@ -125,6 +126,7 @@ function salvaDati(nomeFile, professore, corso, univ, anno){
 			console.log(error);
 			return;
 		}
+		// codice identificativo dell'appunto appena condiviso (se è andata bene la condivisione)
 		console.log("Risposta database:\n codice identificativo dell'appunto condiviso -> "+body.nid);
 	});
 }    
