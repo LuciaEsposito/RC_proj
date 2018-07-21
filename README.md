@@ -35,3 +35,9 @@ Viene aperta la pagina web index.html con cui l'utente può interagire. L'utente
 - http://localhost:3000/use_token/
 
 - http://localhost:3000/shared/
+
+
+
+## Servizi esterni utilizzati
+- Google Drive API
+- Google Picker API
