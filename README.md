@@ -30,7 +30,7 @@ Viene aperta la pagina web index.html con cui l'utente può interagire. L'utente
 
 ## Chiamate REST
 - http://localhost:3000/
-  GET: apre la pagina web "index.html"
+  - GET: apre la pagina web "index.html"
   
 - http://localhost:3000/use_token/
 
