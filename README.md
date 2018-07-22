@@ -37,7 +37,9 @@ Viene aperta la pagina web index.html con cui l'utente può interagire. L'utente
 
 - http://localhost:3000/shared/
    - POST: invia il nome e i _tag_ del file condiviso
-
+   
+- https://appunti-db.herokuapp.com/db/api/v0.1/notes
+   - POST: invia al database tutti i dati del file come oggetto JSon
 
 
 ## Servizi esterni utilizzati
