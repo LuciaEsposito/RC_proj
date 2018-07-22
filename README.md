@@ -30,11 +30,13 @@ Viene aperta la pagina web index.html con cui l'utente può interagire. L'utente
 
 ## Chiamate REST
 - http://localhost:3000/
-  - GET: apre la pagina web "index.html"
+   - GET: apre la pagina web "index.html"
   
 - http://localhost:3000/use_token/
+   - POST: invia i dati del file e dell'autorizzazione
 
 - http://localhost:3000/shared/
+   - POST: invia il nome e i _tag_ del file condiviso
 
 
 
