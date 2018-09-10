@@ -64,7 +64,7 @@ app.post('/use_token', function(req, res){
         var body = '<body style="background:#cce7ff;"><p><strong> Inserisci i seguenti dati </p></strong>' +
 	    	   '<form id="IdTags" action="/shared" method ="post"><input type="hidden" name="Name1" value='+fileName+'>' +
 	    	   '<p>Corso:<br><input type="text" name="corso" required><br><p>Professore:<br><input type="text" name="professore" required><br>' +
-	    	   '<p>Universit&agrave;:<br><input type="text" name="univ" required><br><p>Anno:<br><input type="text" name="anno" required><br><br>' +
+	    	   '<p>Universit&agrave;:<br><input type="text" name="univ" required><br><p>Anno:<br><input type="number" name="anno" min=2000 max=2018 required><br><br>' +
 		   '<br><input type="submit" value="Invia"></form></body>';
         res.write(body);
         res.end();
@@ -112,7 +112,7 @@ function salvaDati(nomeFile, professore, corso, univ, anno){
      		   	   authorization: 'Basic YWxlc3NhbmRybzpwYXNzd29yZDEyMzQ=',
      		  	  'content-type': 'application/json' },
   			body: 
-   			{ name: name,
+   			{ name: nomeFile,
      		  	  owner: '',
      		  	  teacher: professore,
      		  	  subject: corso,
